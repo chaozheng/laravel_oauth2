@@ -95,6 +95,7 @@ class AccessToken implements AccessTokenInterface
             if ($this->config['refresh_token_lifetime'] > 0) {
                 $expires = time() + $this->config['refresh_token_lifetime'];
             }
+
             $this->refreshStorage->setRefreshToken($token['refresh_token'], $client_id, $user_id, $expires, $scope);
         }
 

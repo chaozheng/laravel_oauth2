@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 5.6.28)
 # Database: oauth2
-# Generation Time: 2016-03-11 07:06:12 +0000
+# Generation Time: 2016-03-11 08:09:37 +0000
 # ************************************************************
 
 
@@ -32,6 +32,8 @@ CREATE TABLE `access_tokens` (
   `user_id` int(10) DEFAULT '0',
   `expires` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `scope` text,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -51,6 +53,8 @@ CREATE TABLE `authorization_codes` (
   `expires` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `scope` text,
   `id_token` text,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -69,9 +73,20 @@ CREATE TABLE `clients` (
   `grant_types` varchar(80) DEFAULT '',
   `scope` text,
   `user_id` int(10) DEFAULT '0',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+LOCK TABLES `clients` WRITE;
+/*!40000 ALTER TABLE `clients` DISABLE KEYS */;
+
+INSERT INTO `clients` (`id`, `client_id`, `client_secret`, `redirect_uri`, `grant_types`, `scope`, `user_id`, `created_at`, `updated_at`)
+VALUES
+	(1,'testclient','testpass','http://127.0.0.1/oauth2','authorization_code',NULL,1,NULL,NULL);
+
+/*!40000 ALTER TABLE `clients` ENABLE KEYS */;
+UNLOCK TABLES;
 
 
 # Dump of table jti
@@ -86,6 +101,8 @@ CREATE TABLE `jti` (
   `audience` varchar(80) DEFAULT '',
   `expires` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `jti` text NOT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -101,20 +118,10 @@ CREATE TABLE `jwt` (
   `client_id` varchar(80) NOT NULL,
   `subject` varchar(80) DEFAULT '',
   `public_key` text NOT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-
-
-# Dump of table migrations
-# ------------------------------------------------------------
-
-DROP TABLE IF EXISTS `migrations`;
-
-CREATE TABLE `migrations` (
-  `migration` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `batch` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 
 
@@ -129,6 +136,8 @@ CREATE TABLE `public_keys` (
   `public_key` text,
   `private_key` text,
   `encryption_algorithm` varchar(100) DEFAULT 'RS256',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -146,6 +155,8 @@ CREATE TABLE `refresh_tokens` (
   `user_id` int(10) DEFAULT '0',
   `expires` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `scope` text,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -160,9 +171,22 @@ CREATE TABLE `scopes` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `scope` varchar(80) NOT NULL,
   `is_default` tinyint(1) DEFAULT '0',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+LOCK TABLES `scopes` WRITE;
+/*!40000 ALTER TABLE `scopes` DISABLE KEYS */;
+
+INSERT INTO `scopes` (`id`, `scope`, `is_default`, `created_at`, `updated_at`)
+VALUES
+	(1,'a',1,NULL,'2016-03-11 16:01:31'),
+	(2,'b',0,NULL,'2016-03-11 16:01:31'),
+	(3,'c',0,NULL,'2016-03-11 16:01:31');
+
+/*!40000 ALTER TABLE `scopes` ENABLE KEYS */;
+UNLOCK TABLES;
 
 
 # Dump of table users
@@ -176,9 +200,20 @@ CREATE TABLE `users` (
   `password` varchar(80) DEFAULT '',
   `salt` int(10) unsigned DEFAULT '0',
   `scope` text,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+LOCK TABLES `users` WRITE;
+/*!40000 ALTER TABLE `users` DISABLE KEYS */;
+
+INSERT INTO `users` (`id`, `username`, `password`, `salt`, `scope`, `created_at`, `updated_at`)
+VALUES
+	(1,'test','test',NULL,'1 2 3','2016-03-11 16:06:26','2016-03-11 16:06:26');
+
+/*!40000 ALTER TABLE `users` ENABLE KEYS */;
+UNLOCK TABLES;
 
 
 

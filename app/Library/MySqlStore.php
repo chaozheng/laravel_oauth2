@@ -1,6 +1,15 @@
 <?php
 namespace Library;
+use App\Models\AccessTokens;
+use App\Models\AuthorizationCodes;
+use App\Models\Clients;
+use App\Models\Jti;
+use App\Models\PublicKeys;
+use App\Models\RefreshTokens;
+use App\Models\Scopes;
+use App\User;
 use OAuth2\OpenID\Storage\AuthorizationCodeInterface as OpenIDAuthorizationCodeInterface;
+use OAuth2\ResponseType\AccessToken;
 
 class MySqlStore implements
     \OAuth2\Storage\AccessTokenInterface,
@@ -54,7 +63,7 @@ class MySqlStore implements
 
         $client = $this->getClientDetails($client_id, false);
         if (empty($client)) {
-            $client = new \Clients();
+            $client = new Clients();
         }
 
         $client->client_secret = $client_secret;
@@ -84,7 +93,7 @@ class MySqlStore implements
     {
         $token = null;
 
-        $accessToken = \AccessTokens::where('access_token', '=', $access_token)->first();
+        $accessToken = AccessTokens::where('access_token', '=', $access_token)->first();
 
 
         if (!empty($accessToken)) {
@@ -103,7 +112,7 @@ class MySqlStore implements
         $accessToken = $this->getAccessToken($access_token, false);
         // if it exists, update it.
         if (empty($accessToken)) {
-            $accessToken = new \AccessTokens();
+            $accessToken = new AccessTokens();
         }
         $accessToken->access_token = $access_token;
         $accessToken->client_id = $client_id;
@@ -125,16 +134,16 @@ class MySqlStore implements
     public function getAuthorizationCode($code, $toArray = true)
     {
 
-        $code = null;
+        $codeData = null;
 
-        $authorizationCode = \AuthorizationCodes::where("authorization_code",'=',$code)->first();
+        $authorizationCode = AuthorizationCodes::where("authorization_code",'=',$code)->first();
 
         if (!empty($authorizationCode)) {
-            $code = $authorizationCode->toArray();
-            $code['expires'] = strtotime($code['expires']);
+            $codeData = $authorizationCode->toArray();
+            $codeData['expires'] = strtotime($codeData['expires']);
         }
 
-        return $toArray ? $code : $authorizationCode;
+        return $toArray ? $codeData : $authorizationCode;
     }
 
     public function setAuthorizationCode($code, $client_id, $user_id, $redirect_uri, $expires, $scope = null, $id_token = null)
@@ -145,13 +154,14 @@ class MySqlStore implements
         $authorizationCode = $this->getAuthorizationCode($code, false);
 
         if (empty($authorizationCode)) {
-            $authorizationCode = new \AuthorizationCodes();
+            $authorizationCode = new AuthorizationCodes();
         }
 
         if (!empty($id_token)) {
             $authorizationCode->id_token = $id_token;
         }
 
+        $authorizationCode->authorization_code = $code;
         $authorizationCode->client_id = $client_id;
         $authorizationCode->user_id = $user_id;
         $authorizationCode->redirect_uri = $redirect_uri;
@@ -247,7 +257,7 @@ class MySqlStore implements
         $expires = date('Y-m-d H:i:s', $expires);
 
         $refreshToken = new RefreshTokens();
-        $refreshToken->refresh_token = $refreshToken;
+        $refreshToken->refresh_token = $refresh_token;
         $refreshToken->client_id = $client_id;
         $refreshToken->user_id = $user_id;
         $refreshToken->expires = $expires;
@@ -275,7 +285,7 @@ class MySqlStore implements
 
     public function getDefaultScope($client_id = null)
     {
-        $scopes = Scopes::where('is_default','=',1)->first();
+        $scopes = Scopes::where('is_default','=',1)->get();
 
         $defaultScope = null;
 

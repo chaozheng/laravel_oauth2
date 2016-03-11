@@ -13,3 +13,6 @@
 $app->get('authorize',[
     'as' => 'authorize', 'uses' => 'AuthorizeController@index'
 ]);
+$app->post('token',[
+    'as' => 'token', 'uses' => 'TokenController@index'
+]);
