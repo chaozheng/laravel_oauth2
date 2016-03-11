@@ -5,3 +5,10 @@ composer.lock
 .idea
 .project
 .gitattributes
+storage/*
+
+!storage/app/index.html
+!storage/framework/views/index.html
+!storage/logs/index.html
+tests/*
+!tests/index.html
